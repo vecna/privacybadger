@@ -1,5 +1,11 @@
-let query_param = 'data-expanded-url';
-let tcos_with_destination = "a[" + query_param + "][href^='https://t.co/'], a[" + query_param + "][href^='http://t.co/']";
+let query_params = [
+  'data-expanded-url',
+  'title',
+];
+let tcos_with_destination = query_params.map(val => {
+  return "a[" + val + "][href^='https://t.co/'], a[" + val + "][href^='http://t.co/']";
+}).join(", ");
+
 let fixes = {};
 
 function maybeAddNoreferrer(link) {
@@ -17,6 +23,15 @@ function unwrapTco(tco, destination) {
     e.stopPropagation();
   });
   maybeAddNoreferrer(tco);
+}
+
+function getOriginalUrl(link) {
+  for (let i = 0; i < query_params.length; i++) {
+    let attr = link.getAttribute(query_params[i]);
+    if (attr && (attr.startsWith("https://") || attr.startsWith("http://"))) {
+      return attr;
+    }
+  }
 }
 
 function findInAllFrames(query) {
@@ -38,15 +53,17 @@ function findInAllFrames(query) {
 
 function unwrapTwitterURLs() {
   findInAllFrames(tcos_with_destination).forEach((link) => {
-    let attr = link.getAttribute(query_param);
-    if (attr && (attr.startsWith("https://") || attr.startsWith("http://"))) {
-      fixes[link.href] = attr;
-      unwrapTco(link, attr);
+    let orig_url = getOriginalUrl(link);
+    if (orig_url) {
+      fixes[link.href] = orig_url;
+      unwrapTco(link, orig_url);
     }
   });
   findInAllFrames("a[href^='https://t.co/'], a[href^='http://t.co/'").forEach((link) => {
     if (fixes.hasOwnProperty(link.href)) {
       unwrapTco(link, fixes[link.href]);
+    } else if (link.textContent.startsWith("pic.twitter.com/")) {
+      unwrapTco(link, 'https://' + link.textContent);
     }
   });
 }
