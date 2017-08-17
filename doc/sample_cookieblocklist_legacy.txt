@@ -493,6 +493,7 @@
 @@||stripecdn.com^$third-party
 @@||surveygizmo.com^$third-party
 @@||surveymonkey.com^$third-party
+@@||swiftype.com^$third-party
 @@||syracuse.com^$third-party
 @@||public.tableausoftware.com^$third-party
 @@||c.tadst.com^$third-party
