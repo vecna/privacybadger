@@ -142,15 +142,19 @@ Counter.prototype = {
       propInfo = _objectsHelper(dottedPropName),
       name = propInfo.name,
       baseObj = propInfo.baseObj,
-      propName = propInfo.propName,
-      before = baseObj[propName];
+      propName = propInfo.propName;
 
-    Object.defineProperty(baseObj, propName, {
-      get: function() {
-        self.addCall(name, scriptOrigin());
-        return before;
-      }
-    });
+    try {
+      let before = baseObj[propName];
+      Object.defineProperty(baseObj, propName, {
+        get: function() {
+          self.addCall(name, scriptOrigin());
+          return before;
+        }
+      });
+    } catch(e) {
+      console.log("Managed error in", baseObj, propInfo);
+    }
   },
 
   addOrigin: function() {
@@ -180,6 +184,7 @@ Counter.prototype = {
       }
     }
     this.origins[origin].counts[name] += 1;
+    console.log("MATCHP " + JSON.stringify(this.origins));
   },
 };
 
