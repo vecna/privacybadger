@@ -184,7 +184,7 @@ Counter.prototype = {
       }
     }
     this.origins[origin].counts[name] += 1;
-    console.log("MATCHP " + JSON.stringify(this.origins));
+    console.warn("MATCHP " + JSON.stringify(this.origins));
   },
 };
 
