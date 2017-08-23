@@ -96,6 +96,10 @@ let objects = [
 ];
 
 // todo: what is a better data structure here?
+// XXX open an issue saying:
+// probably something keeping in account the 
+// the document.currentScript.src and not just the domain name,
+// same domain provide different JS
 let _objectsHelper = (dottedString) => {
   let arr = dottedString.split('.'),
     last = arr.pop(),
@@ -103,6 +107,9 @@ let _objectsHelper = (dottedString) => {
   if (arr) {
     base = arr.reduce((o, i) => o[i], base);
   }
+  if (arr.length == 1)
+    console.error("_objectsHelper got unexpected input:", dottedString, base, last);
+
   return {
     'name': dottedString,
     'baseObj': base,
@@ -158,7 +165,16 @@ Counter.prototype = {
   },
 
   addOrigin: function() {
-    let out = {counts: {}, nnzCounts: 0};
+    let out = {
+        counts: {},
+        nnzCounts: 0,
+    };
+
+    if(document)
+          if(document.currentScript)
+              if(document.currentScript.src)
+                  out.src = document.currentScript.src;
+
     for (let m of this.methods) {
       out.counts[m] = 0;
     }
@@ -189,7 +205,6 @@ Counter.prototype = {
 };
 
 function send(origin) {
-  console.log(origin);
   document.dispatchEvent(new CustomEvent(event_id, {
     detail: {countedFingers: true, origin: origin},
   }));
