@@ -107,9 +107,9 @@ let _objectsHelper = (dottedString) => {
   if (arr) {
     base = arr.reduce((o, i) => o[i], base);
   }
-  if (arr.length == 1)
+  /* if (arr.length == 1)
     console.error("_objectsHelper got unexpected input:", dottedString, base, last);
-
+*/
   return {
     'name': dottedString,
     'baseObj': base,
@@ -170,10 +170,10 @@ Counter.prototype = {
         nnzCounts: 0,
     };
 
-    if(document)
-          if(document.currentScript)
-              if(document.currentScript.src)
-                  out.src = document.currentScript.src;
+    if(document && document.currentScript && document.currentScript.src) {
+        console.warn("I'm adding the src", document.currentScript.src);
+        out.src = document.currentScript.src;
+    }
 
     for (let m of this.methods) {
       out.counts[m] = 0;
@@ -200,6 +200,7 @@ Counter.prototype = {
       }
     }
     this.origins[origin].counts[name] += 1;
+    /* this is the hackish way to export this analysis to selenium */
     console.warn("MATCHP " + JSON.stringify(this.origins));
   },
 };
